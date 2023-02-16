@@ -1,10 +1,11 @@
-import { Bullet } from "../projectiles/bullet";
+import { Bullet } from "../projectiles/bullet.js";
 export class BulletWeapon {
-    constructor() {
+    constructor(tank) {
         console.log('created bullet');
+        this.tank = tank;
     }
     shoot() {
         console.log('shooting bullet');
-        this.game.gameObjects.push(new Bullet(this.tank));
+        return new Bullet(this.tank);
     }
 }

@@ -1,10 +1,11 @@
-import { Missile } from "../projectiles/missile";
+import { Missile } from "../projectiles/missile.js";
 export class MissileWeapon {
-    constructor() {
+    constructor(tank) {
+        this.tank = tank;
         console.log('created missile');
     }
     shoot() {
         console.log('shooting missile');
-        this.game.gameObjects.push(new Missile(this.tank));
+        return new Missile(this.tank);
     }
 }

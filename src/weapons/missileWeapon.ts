@@ -1,17 +1,19 @@
-import { Game } from "../game"
-import { Missile } from "../projectiles/missile"
-import { Tank } from "../tank"
-import { Weapon } from "./weapon"
+import { Game } from "../game.js"
+import { Missile } from "../projectiles/missile.js"
+import { Projectile } from "../projectiles/projectile.js"
+import { Tank } from "../tank.js"
+import { Weapon } from "./weapon.js"
 
 export class MissileWeapon implements Weapon {
     private game: Game
     private tank: Tank
     
-    constructor(){
+    constructor(tank: Tank){
+        this.tank = tank;
         console.log('created missile')
     }
-    public shoot(): void {
+    public shoot(): Projectile {
         console.log('shooting missile')
-        this.game.gameObjects.push(new Missile(this.tank))
+        return new Missile(this.tank)
     }
 }

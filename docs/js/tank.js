@@ -1,6 +1,7 @@
 import { GameObject } from "./gameobject.js";
 import { Turret } from "./turret.js";
 import { Vector } from "./vector.js";
+import { BulletWeapon } from "./weapons/bulletWeapon.js";
 export class Tank extends GameObject {
     get Speed() { return this.speed; }
     get Turret() { return this.turret; }
@@ -11,7 +12,7 @@ export class Tank extends GameObject {
         this.turnLeft = false;
         this.turnRight = false;
         this.accelerate = false;
-        this.canFire = false;
+        this.canFire = true;
         this.previousState = false;
         this.rotationSpeed = 2;
         this.fireRate = 100;
@@ -22,6 +23,7 @@ export class Tank extends GameObject {
         this.speed = new Vector(0, 0);
         this.rotation = 0;
         this.turret = new Turret(this);
+        this.weapon = new BulletWeapon(this);
         window.addEventListener("keydown", (e) => this.handleKeyDown(e));
         window.addEventListener("keyup", (e) => this.handleKeyUp(e));
     }
@@ -60,7 +62,7 @@ export class Tank extends GameObject {
         if (e.key == "ArrowUp")
             this.accelerate = true;
         if (e.key == " ")
-            this.canFire = true;
+            this.fire();
     }
     handleKeyUp(e) {
         if (e.key == "ArrowLeft")
@@ -70,16 +72,20 @@ export class Tank extends GameObject {
         if (e.key == "ArrowUp")
             this.accelerate = false;
         if (e.key == " ")
-            this.canFire = false;
+            this.previousState = false;
     }
     fire() {
         if (this.canFire && !this.previousState) {
-            this.weapon.shoot();
+            this.game.gameObjects.push(this.weapon.shoot());
             this.previousState = true;
+            this.canFire = false;
             setTimeout(() => { this.canFire = true; }, this.fireRate);
         }
     }
     onCollision(target) {
+    }
+    setWeapon(weapon) {
+        this.weapon = weapon;
     }
     keepInWindow() {
         if (this.position.x + this.width < 0)

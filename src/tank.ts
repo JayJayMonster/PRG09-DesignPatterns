@@ -1,9 +1,14 @@
-import { Bullet }           from "./projectiles/bullet.js";
 import { Game }             from "./game.js";
 import { GameObject }       from "./gameobject.js";
 import { Turret }           from "./turret.js";
 import { Vector }           from "./vector.js";
-import { Weapon } from "./weapons/weapon.js";
+import { Weapon }           from "./weapons/weapon.js";
+import { BulletWeapon }     from "./weapons/bulletWeapon.js";
+import { Bullet } from "./projectiles/bullet.js";
+import { Missile } from "./projectiles/missile.js";
+import { Rocket } from "./projectiles/rocket.js";
+import { MissileWeapon } from "./weapons/missileWeapon.js";
+import { RocketWeapon } from "./weapons/rocketWeapon.js";
 
 export class Tank extends GameObject {
     private readonly FRICTION       : number    = 0.3  
@@ -13,21 +18,20 @@ export class Tank extends GameObject {
     private turnLeft        : boolean   = false
     private turnRight       : boolean   = false
     private accelerate      : boolean   = false
-    private canFire         : boolean   = false
+    private canFire         : boolean   = true
     private previousState   : boolean   = false
     private rotationSpeed   : number    = 2
     private turret          : Turret
     private game            : Game
+    private tank            : Tank
     private fireRate        : number    = 100
     private weapon          : Weapon;
-    
     
     protected speed         : Vector    = new Vector(0, 0)
     
     // Properties
     public get Speed()  : Vector { return this.speed }
     public get Turret() : Turret { return this.turret }
-    // public set Weapon(weapon: Weapon) {this.weapon = weapon}
     
     constructor(game:Game) {
         super("tank-body")
@@ -40,6 +44,8 @@ export class Tank extends GameObject {
         this.rotation   = 0
         
         this.turret = new Turret(this)
+
+        this.weapon = new BulletWeapon(this);
 
         window.addEventListener("keydown",  (e : KeyboardEvent) => this.handleKeyDown(e))
         window.addEventListener("keyup",    (e : KeyboardEvent) => this.handleKeyUp(e))
@@ -78,7 +84,7 @@ export class Tank extends GameObject {
         
         if(e.key == "ArrowUp")          this.accelerate = true
 
-        if(e.key == " ")                this.canFire = true
+        if(e.key == " ")                this.fire();
     }
     
     private handleKeyUp(e : KeyboardEvent) {
@@ -87,15 +93,14 @@ export class Tank extends GameObject {
 
         if(e.key == "ArrowUp")          this.accelerate = false
 
-        if(e.key == " ")                this.canFire = false    
+        if(e.key == " ")                this.previousState = false    
     }
 
     private fire() {
         if(this.canFire && !this.previousState) {
-            //this.game.gameObjects.push(new Bullet(this))
-            this.weapon.shoot()
+            this.game.gameObjects.push(this.weapon.shoot())
             this.previousState = true
-            // this.canFire = false
+            this.canFire = false
             
             // Timer for the fire rate
             setTimeout(() => { this.canFire = true }, this.fireRate)
@@ -103,7 +108,10 @@ export class Tank extends GameObject {
     }
 
     onCollision(target: GameObject): void {
-        // throw new Error("Method not implemented.");
+    }
+
+    public setWeapon(weapon: Weapon) {
+        this.weapon = weapon;
     }
 
     private keepInWindow() {

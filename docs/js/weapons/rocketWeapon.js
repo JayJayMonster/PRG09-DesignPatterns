@@ -1,10 +1,11 @@
-import { Rocket } from "../projectiles/rocket";
+import { Rocket } from "../projectiles/rocket.js";
 export class RocketWeapon {
-    constructor() {
+    constructor(tank) {
+        this.tank = tank;
         console.log('created rocket');
     }
     shoot() {
         console.log('shooting rocket');
-        this.game.gameObjects.push(new Rocket(this.tank));
+        return new Rocket(this.tank);
     }
 }
